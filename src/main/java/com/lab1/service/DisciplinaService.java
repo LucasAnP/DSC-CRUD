@@ -1,46 +1,22 @@
 package com.lab1.service;
 
-import com.lab1.dto.DisciplinaDTO;
 import com.lab1.entity.Disciplina;
+import com.lab1.repository.DisciplinaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DisciplinaService {
     List<Disciplina> disciplinas = new ArrayList<>();
-    static private int incrementador = 1;
+    static private long incrementador = 1;
 
-    public Disciplina criarDisciplina(DisciplinaDTO disciplina){
-        Disciplina disciplina1 = new Disciplina(incrementador++, disciplina.getNome(), disciplina.getNota());
-        this.disciplinas.add(disciplina1);
-
-        return disciplina1;
-    }
-
-    public List<Disciplina> buscarDisciplinas(){
-        return this.disciplinas;
-    }
-
-    public Disciplina buscarPeloId(int id){
-        for(Disciplina disciplinaSetada: this.disciplinas){
-            if (disciplinaSetada.getId() == id){
-                return disciplinaSetada;
-            }
-        }
-        return null;
-    }
-
-    public Disciplina removeDisciplina(int id){
-        for(Disciplina disciplinaExcluida: this.disciplinas){
-            if (disciplinaExcluida.getId() == id){
-                this.disciplinas.remove(disciplinaExcluida);
-            }
-        }
-        return null;
-    }
+    @Autowired
+    private DisciplinaRepository repository;
 
     public List<Disciplina> retornaRanking() {
         List<Disciplina> disciplinasRanking = this.disciplinas;
@@ -49,25 +25,17 @@ public class DisciplinaService {
         return disciplinasRanking;
     }
 
-    public Disciplina mudarNome (int id, String name) {
-        for (Disciplina disciplinaNome : this.disciplinas) {
-            if (disciplinaNome.getId() == id) {
-                disciplinaNome.setNome(name);
-
-                return disciplinaNome;
-            }
-        }
-        return null;
+    public Disciplina mudarNome (Long id, String name) {
+        return repository.findById(id).map(disciplina ->{
+            disciplina.setNome(name);
+            return repository.save(disciplina);
+        } ).orElseThrow(()->new EmptyResultDataAccessException(1));
     }
 
-    public Disciplina mudarNota (int id, Double nota){
-        for(Disciplina disciplinaNota: this.disciplinas){
-            if (disciplinaNota.getId() == id){
-                disciplinaNota.setNota(nota);
-
-                return disciplinaNota;
-            }
-        }
-        return null;
+    public Disciplina mudarNota (Long id, Double nota){
+        return repository.findById(id).map(disciplina ->{
+            disciplina.setNota(nota);
+            return repository.save(disciplina);
+        } ).orElseThrow(()->new EmptyResultDataAccessException(1));
     }
 }
