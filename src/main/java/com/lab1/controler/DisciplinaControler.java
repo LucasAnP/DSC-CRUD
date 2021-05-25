@@ -1,6 +1,8 @@
 package com.lab1.controler;
 
+import com.lab1.dto.ComentarioDTO;
 import com.lab1.dto.DisciplinaDTO;
+import com.lab1.entity.Comentario;
 import com.lab1.entity.Disciplina;
 import com.lab1.repository.DisciplinaRepository;
 import com.lab1.service.DisciplinaService;
@@ -64,6 +66,13 @@ public class DisciplinaControler {
     private List<Disciplina> getRanking(){
         return service.retornaRanking();
     }
+
+    @PostMapping("/comentarios/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    private Disciplina postComentario(@PathVariable Long id, @RequestBody ComentarioDTO comentario){
+        return service.adicionarComentario(id, comentario);
+    }
+
 
 
 

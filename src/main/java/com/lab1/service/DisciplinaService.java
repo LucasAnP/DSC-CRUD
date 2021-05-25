@@ -1,6 +1,9 @@
 package com.lab1.service;
 
+import com.lab1.dto.ComentarioDTO;
+import com.lab1.entity.Comentario;
 import com.lab1.entity.Disciplina;
+import com.lab1.repository.ComentarioRepository;
 import com.lab1.repository.DisciplinaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,6 +20,8 @@ public class DisciplinaService {
 
     @Autowired
     private DisciplinaRepository repository;
+
+    private ComentarioRepository comentarioRepository;
 
     public List<Disciplina> retornaRanking() {
         List<Disciplina> disciplinasRanking = this.disciplinas;
@@ -37,5 +42,13 @@ public class DisciplinaService {
             disciplina.setNota(nota);
             return repository.save(disciplina);
         } ).orElseThrow(()->new EmptyResultDataAccessException(1));
+    }
+
+    public Disciplina adicionarComentario (Long id, ComentarioDTO comentario){
+
+        return repository.findById(id).map(disciplina ->{
+            disciplina.getComentarios().add(comentarioRepository.save(Comentario.DtoParaComentario(comentario)));
+            return repository.save(disciplina);
+        }).orElseThrow(()-> new EmptyResultDataAccessException(1));
     }
 }
